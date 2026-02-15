@@ -31,7 +31,7 @@ if(EMSCRIPTEN)
     add_executable(physics_wasm src/wasm_bindings.c)
     target_link_libraries(physics_wasm PRIVATE physics)
     set_target_properties(physics_wasm PROPERTIES
-        LINK_FLAGS "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] -s MODULARIZE=1 -s EXPORT_NAME='PhysicsModule' -s ALLOW_MEMORY_GROWTH=1 --no-entry"
+        LINK_FLAGS "-s EXPORTED_RUNTIME_METHODS=['ccall','cwrap'] -s MODULARIZE=1 -s EXPORT_NAME='PhysicsModule' -s EXPORT_ES6=1 -s ALLOW_MEMORY_GROWTH=1 --no-entry"
         SUFFIX ".js"
     )
 endif()
