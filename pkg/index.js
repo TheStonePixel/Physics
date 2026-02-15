@@ -1,4 +1,4 @@
-const PhysicsModule = require('./physics_wasm.js');
+import PhysicsModule from './physics_wasm.js';
 
 let _instance = null;
 
@@ -59,4 +59,4 @@ class PhysicsEngine {
   }
 }
 
-module.exports = { init, PhysicsEngine };
+export { init, PhysicsEngine };

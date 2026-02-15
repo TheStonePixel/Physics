@@ -2,6 +2,7 @@
   "name": "@thestonepixel/physics",
   "version": "0.1.0",
   "description": "Pure-computation physics library compiled to WebAssembly. Golf ball aerodynamics, projectile motion, collision detection, and vector/matrix math.",
+  "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
