@@ -8,8 +8,7 @@
   "files": [
     "index.js",
     "index.d.ts",
-    "physics_wasm.js",
-    "physics_wasm.wasm"
+    "physics_wasm.js"
   ],
   "scripts": {
     "build": "../scripts/build-wasm.sh",

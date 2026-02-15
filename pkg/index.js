@@ -1,7 +1,5 @@
 import PhysicsModule from './physics_wasm.js';
 
-const wasmUrl = new URL('./physics_wasm.wasm', import.meta.url).href;
-
 let _instance = null;
 
 /**
@@ -11,9 +9,7 @@ let _instance = null;
  */
 async function init() {
   if (_instance) return _instance;
-  const wasm = await PhysicsModule({
-    locateFile: (path) => path.endsWith('.wasm') ? wasmUrl : path,
-  });
+  const wasm = await PhysicsModule();
   _instance = new PhysicsEngine(wasm);
   return _instance;
 }

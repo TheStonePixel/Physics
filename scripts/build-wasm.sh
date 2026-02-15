@@ -20,6 +20,5 @@ emmake make -j"$(nproc 2>/dev/null || echo 4)"
 
 echo "Copying to pkg/..."
 cp "$BUILD_DIR/physics_wasm.js" "$PKG_DIR/"
-cp "$BUILD_DIR/physics_wasm.wasm" "$PKG_DIR/"
 
 echo "Done. Package ready in pkg/"
