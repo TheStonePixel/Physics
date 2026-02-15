@@ -59,4 +59,5 @@ class PhysicsEngine {
   }
 }
 
+export default init;
 export { init, PhysicsEngine };

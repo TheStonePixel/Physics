@@ -30,3 +30,4 @@ export declare class PhysicsEngine {
 }
 
 export declare function init(): Promise<PhysicsEngine>;
+export default init;
