@@ -43,8 +43,47 @@ export interface SimulateResult {
   count: number;
 }
 
+export interface RollingPoint {
+  x: number;
+  y: number;
+  z: number;
+  spin: number;
+  t: number;
+}
+
+export interface RollOptions {
+  /** Landing velocity [x, y, z] in m/s */
+  velocity: [number, number, number];
+  /** Body radius in meters */
+  radius: number;
+  /** Body mass in kg */
+  mass: number;
+  /** Rolling resistance coefficient */
+  rollingFriction: number;
+  /** Bounce energy retained (0=dead, 1=perfect) */
+  surfaceRestitution: number;
+  /** Surface firmness (0=soft/absorptive, 1=hard/reflective) */
+  firmness: number;
+  /** Landing position [x, y, z] in meters. Default: [0, 0, 0] */
+  position?: [number, number, number];
+  /** Spin axis [x, y, z], normalized. Default: [0, 0, 1] */
+  spinAxis?: [number, number, number];
+  /** Spin rate in rad/s. Default: 0 */
+  spinRate?: number;
+  /** Surface normal [x, y, z] for slopes. Default: [0, 1, 0] (flat) */
+  surfaceNormal?: [number, number, number];
+  /** Simulation time step in seconds. Default: 0.005 */
+  dt?: number;
+}
+
+export interface RollResult {
+  points: RollingPoint[];
+  count: number;
+}
+
 export declare class PhysicsEngine {
   simulate(opts: SimulateOptions): SimulateResult;
+  simulateRoll(opts: RollOptions): RollResult;
 }
 
 export declare function init(): Promise<PhysicsEngine>;

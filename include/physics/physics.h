@@ -19,5 +19,6 @@
 #include "dynamics.h"
 #include "aerodynamics.h"
 #include "collision.h"
+#include "surface.h"
 
 #endif /* PHYSICS_H */

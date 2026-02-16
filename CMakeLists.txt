@@ -14,6 +14,7 @@ set(PHYSICS_SOURCES
     src/dynamics.c
     src/aerodynamics.c
     src/collision.c
+    src/surface.c
 )
 
 # Static library
@@ -47,6 +48,7 @@ if(PHYSICS_BUILD_TESTS AND NOT EMSCRIPTEN)
         test/test_dynamics.c
         test/test_aerodynamics.c
         test/test_collision.c
+        test/test_surface.c
     )
     target_link_libraries(physics_tests PRIVATE physics m)
     add_test(NAME physics_tests COMMAND physics_tests)

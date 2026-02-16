@@ -77,3 +77,64 @@ PHYS_EXPORT float aero_get_time(int i) {
     if (i < 0 || i >= g_trajectory_count) return 0;
     return g_trajectory[i].time;
 }
+
+/* --- Surface rolling simulation binding --- */
+
+static phys_rolling_point g_rolling[4096];
+static int g_rolling_count = 0;
+
+PHYS_EXPORT int rolling_simulate(
+    float px, float py, float pz,
+    float vx, float vy, float vz,
+    float sx, float sy, float sz,
+    float spin_rate, float radius, float mass,
+    float rolling_friction, float surface_restitution,
+    float firmness,
+    float normal_x, float normal_y, float normal_z,
+    float dt
+) {
+    phys_vec3 pos = {px, py, pz};
+    phys_vec3 vel = {vx, vy, vz};
+    phys_vec3 spin_axis = phys_vec3_normalize((phys_vec3){sx, sy, sz});
+    phys_vec3 gravity = {0, -9.81f, 0};
+
+    phys_surface surface = phys_surface_create_sloped(
+        rolling_friction, surface_restitution, firmness,
+        (phys_vec3){normal_x, normal_y, normal_z}
+    );
+
+    g_rolling_count = phys_surface_simulate_roll(
+        pos, vel, spin_axis, spin_rate, radius, mass,
+        gravity, surface, dt, g_rolling, 4096
+    );
+    return g_rolling_count;
+}
+
+PHYS_EXPORT int rolling_get_count(void) {
+    return g_rolling_count;
+}
+
+PHYS_EXPORT float rolling_get_x(int i) {
+    if (i < 0 || i >= g_rolling_count) return 0;
+    return g_rolling[i].position.x;
+}
+
+PHYS_EXPORT float rolling_get_y(int i) {
+    if (i < 0 || i >= g_rolling_count) return 0;
+    return g_rolling[i].position.y;
+}
+
+PHYS_EXPORT float rolling_get_z(int i) {
+    if (i < 0 || i >= g_rolling_count) return 0;
+    return g_rolling[i].position.z;
+}
+
+PHYS_EXPORT float rolling_get_spin(int i) {
+    if (i < 0 || i >= g_rolling_count) return 0;
+    return g_rolling[i].spin_rate;
+}
+
+PHYS_EXPORT float rolling_get_time(int i) {
+    if (i < 0 || i >= g_rolling_count) return 0;
+    return g_rolling[i].time;
+}

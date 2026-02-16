@@ -57,6 +57,45 @@ int golf_simulate_custom(phys_float ball_speed, phys_float launch_angle_deg,
                          phys_float spin_rate, phys_float side_angle_deg,
                          phys_trajectory_point *out, int max_points);
 
+/* --- Surface types --- */
+typedef enum {
+    GOLF_SURFACE_FAIRWAY,
+    GOLF_SURFACE_ROUGH,
+    GOLF_SURFACE_GREEN,
+    GOLF_SURFACE_FRINGE,
+    GOLF_SURFACE_BUNKER,
+    GOLF_SURFACE_CART_PATH,
+    GOLF_SURFACE_COUNT
+} golf_surface_type;
+
+/* Get a phys_surface preset for a surface type (flat).
+   Use golf_get_sloped_surface() for elevation changes. */
+phys_surface golf_get_surface(golf_surface_type type);
+
+/* Get a sloped surface preset. slope_normal should be normalized. */
+phys_surface golf_get_sloped_surface(golf_surface_type type, phys_vec3 slope_normal);
+
+/* Get the display name for a surface type. */
+const char *golf_surface_name(golf_surface_type type);
+
+/* Simulate ball rolling after landing on a surface.
+   Takes the landing position/velocity and remaining spin from the flight sim.
+   Returns the number of rolling points written to `out`. */
+int golf_simulate_roll(phys_vec3 landing_pos, phys_vec3 landing_vel,
+                       phys_float spin_rate, golf_surface_type surface,
+                       phys_rolling_point *out, int max_points);
+
+/* Simulate full shot: flight + roll on a given surface.
+   Writes flight trajectory to `flight_out` and roll to `roll_out`.
+   Returns total distance (carry + roll). */
+phys_float golf_simulate_full_shot(golf_club_type club,
+                                   phys_float speed_override,
+                                   golf_surface_type landing_surface,
+                                   phys_trajectory_point *flight_out,
+                                   int *flight_count, int max_flight,
+                                   phys_rolling_point *roll_out,
+                                   int *roll_count, int max_roll);
+
 /* Utility: compute carry distance (horizontal) from trajectory */
 phys_float golf_carry_distance(const phys_trajectory_point *pts, int count);
 
@@ -65,5 +104,12 @@ phys_float golf_max_height(const phys_trajectory_point *pts, int count);
 
 /* Utility: compute lateral deviation from trajectory */
 phys_float golf_lateral_deviation(const phys_trajectory_point *pts, int count);
+
+/* Utility: compute roll distance from rolling points */
+phys_float golf_roll_distance(const phys_rolling_point *pts, int count);
+
+/* Utility: compute total distance (carry + roll) */
+phys_float golf_total_distance(const phys_trajectory_point *flight, int flight_n,
+                               const phys_rolling_point *roll, int roll_n);
 
 #endif /* GOLF_PHYSICS_H */

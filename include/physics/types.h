@@ -77,4 +77,20 @@ typedef struct {
     phys_float time;
 } phys_trajectory_point;
 
+/* --- Surface definition --- */
+typedef struct {
+    phys_float rolling_friction;  /* rolling resistance coefficient */
+    phys_float restitution;       /* bounce energy retained (0=dead, 1=perfect) */
+    phys_float firmness;          /* 0=soft/absorptive, 1=hard/reflective */
+    phys_vec3 normal;             /* surface normal (default: 0,1,0 = flat) */
+} phys_surface;
+
+/* --- Rolling simulation point --- */
+typedef struct {
+    phys_vec3 position;
+    phys_vec3 velocity;
+    phys_float spin_rate;
+    phys_float time;
+} phys_rolling_point;
+
 #endif /* PHYSICS_TYPES_H */
