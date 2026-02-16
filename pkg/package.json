@@ -1,7 +1,7 @@
 {
   "name": "@thestonepixel/physics",
   "version": "0.1.0",
-  "description": "Pure-computation physics library compiled to WebAssembly. Golf ball aerodynamics, projectile motion, collision detection, and vector/matrix math.",
+  "description": "Pure-computation physics library compiled to WebAssembly. Aerodynamics, projectile motion, collision detection, and vector/matrix math.",
   "type": "module",
   "main": "index.js",
   "types": "index.d.ts",
@@ -14,7 +14,7 @@
     "build": "../scripts/build-wasm.sh",
     "prepublishOnly": "npm run build"
   },
-  "keywords": ["physics", "wasm", "webassembly", "golf", "simulation", "vector", "matrix", "collision"],
+  "keywords": ["physics", "wasm", "webassembly", "aerodynamics", "simulation", "vector", "matrix", "collision"],
   "license": "MIT",
   "repository": {
     "type": "git",

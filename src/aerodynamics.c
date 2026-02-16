@@ -3,17 +3,6 @@
 #include "physics/dynamics.h"
 #include <math.h>
 
-phys_aero_params phys_aero_golf_ball_defaults(void) {
-    phys_aero_params params;
-    params.drag_coefficient = 0.25f;     /* golf ball with dimples */
-    params.lift_coefficient = 0.15f;     /* typical for backspin */
-    params.cross_section_area = 0.00143f; /* pi * (0.02135)^2 m^2 */
-    params.radius = 0.02135f;            /* 42.67mm diameter */
-    params.air_density = 1.225f;         /* sea level */
-    params.spin_decay = 0.04f;           /* ~4% per second */
-    return params;
-}
-
 phys_vec3 phys_aero_drag(phys_vec3 velocity, phys_float drag_coeff,
                          phys_float area, phys_float air_density) {
     phys_float speed = phys_vec3_length(velocity);
@@ -33,7 +22,7 @@ phys_vec3 phys_aero_magnus(phys_vec3 velocity, phys_vec3 spin_axis,
     /* Empirical Magnus/lift force for spinning spheres:
        F = 0.5 * Cl * rho * A * v^2 * lift_direction
        where Cl is derived from spin parameter S = omega*r / v.
-       Typical relation for a golf ball: Cl ~ 0.54 * S (capped at ~0.4).
+       Typical relation: Cl ~ 0.54 * S (capped at ~0.4).
        lift_direction = normalize(omega x v) */
     phys_float S = spin_rate * radius / speed;
     phys_float Cl = 0.54f * S;
@@ -80,17 +69,19 @@ void phys_aero_step(phys_body *body, phys_vec3 *spin_axis,
     if (*spin_rate < 0.1f) *spin_rate = 0;
 }
 
-int phys_golf_simulate(phys_vec3 pos0, phys_vec3 vel0,
+int phys_aero_simulate(phys_vec3 pos0, phys_vec3 vel0,
                        phys_vec3 spin_axis, phys_float spin_rate,
-                       phys_vec3 gravity, phys_aero_params params,
+                       phys_float mass, phys_float restitution,
+                       phys_float friction, phys_vec3 gravity,
+                       phys_aero_params params,
                        phys_float ground_y, phys_float dt,
                        phys_trajectory_point *out, int max_points) {
-    phys_body ball;
-    phys_body_init(&ball, 0.04593f); /* standard golf ball: 45.93g */
-    ball.position = pos0;
-    ball.velocity = vel0;
-    ball.restitution = 0.6f;
-    ball.friction = 0.4f;
+    phys_body body;
+    phys_body_init(&body, mass);
+    body.position = pos0;
+    body.velocity = vel0;
+    body.restitution = restitution;
+    body.friction = friction;
 
     phys_float spin = spin_rate;
     phys_vec3 axis = spin_axis;
@@ -98,17 +89,17 @@ int phys_golf_simulate(phys_vec3 pos0, phys_vec3 vel0,
     phys_float time = 0;
 
     for (int i = 0; i < max_points; i++) {
-        out[count].position = ball.position;
-        out[count].velocity = ball.velocity;
+        out[count].position = body.position;
+        out[count].velocity = body.velocity;
         out[count].time = time;
         count++;
 
-        if (i > 0 && ball.position.y < ground_y) break;
+        if (i > 0 && body.position.y < ground_y) break;
 
-        phys_body_apply_gravity(&ball, gravity);
-        phys_vec3 aero = phys_aero_total_force(ball.velocity, axis, spin, params);
-        phys_body_apply_force(&ball, aero);
-        phys_body_step_verlet(&ball, dt);
+        phys_body_apply_gravity(&body, gravity);
+        phys_vec3 aero = phys_aero_total_force(body.velocity, axis, spin, params);
+        phys_body_apply_force(&body, aero);
+        phys_body_step_verlet(&body, dt);
 
         spin *= (1.0f - params.spin_decay * dt);
         if (spin < 0.1f) spin = 0;

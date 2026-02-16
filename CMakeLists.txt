@@ -51,3 +51,13 @@ if(PHYSICS_BUILD_TESTS AND NOT EMSCRIPTEN)
     target_link_libraries(physics_tests PRIVATE physics m)
     add_test(NAME physics_tests COMMAND physics_tests)
 endif()
+
+# Examples
+option(PHYSICS_BUILD_EXAMPLES "Build examples" OFF)
+if(PHYSICS_BUILD_EXAMPLES AND NOT EMSCRIPTEN)
+    add_executable(golf_example
+        examples/golf/golf_physics.c
+        examples/golf/main.c
+    )
+    target_link_libraries(golf_example PRIVATE physics m)
+endif()
