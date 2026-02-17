@@ -1,9 +1,10 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import {
   CLUBS, CLUB_ORDER, SURFACES, SURFACE_ORDER,
   simulateShot, simulateFullBag,
 } from '../lib/golf.js';
+import { formatDistance, formatSpeed, formatSpin } from '../lib/units.js';
 
 // --- Inputs ---
 const clubKey = ref('driver');
@@ -12,6 +13,14 @@ const speed = ref(CLUBS.driver.speed);
 const launchAngle = ref(CLUBS.driver.launch);
 const spinRate = ref(CLUBS.driver.spin);
 const sideAngle = ref(0);
+
+// --- Units ---
+const unitSystem = ref('imperial'); // 'imperial' | 'metric'
+const isImperial = computed(() => unitSystem.value === 'imperial');
+
+const dist = (m) => formatDistance(m, unitSystem.value);
+const spd = (ms) => formatSpeed(ms, unitSystem.value);
+const spin = (rads) => formatSpin(rads);
 
 // --- Results ---
 const result = ref(null);
@@ -89,11 +98,11 @@ function draw() {
   ctx.font = '10px monospace';
   ctx.textAlign = 'center';
   for (let d = 0; d <= maxX; d += gridX) {
-    ctx.fillText(`${Math.round(d)}m`, sx(d), H - pad + 14);
+    ctx.fillText(dist(d).display, sx(d), H - pad + 14);
   }
   ctx.textAlign = 'right';
   for (let h = gridY; h <= maxY; h += gridY) {
-    ctx.fillText(`${Math.round(h)}m`, pad - 6, sy(h) + 3);
+    ctx.fillText(dist(h).display, pad - 6, sy(h) + 3);
   }
 
   // Ground line
@@ -147,12 +156,13 @@ function draw() {
   ctx.font = '11px monospace';
   ctx.textAlign = 'center';
   ctx.fillStyle = '#fa4';
-  ctx.fillText(`Carry ${result.value.stats.carry}m`, sx(land.x), sy(0) + 26);
+  ctx.fillText(`Carry ${dist(result.value.stats.carry).display}`, sx(land.x), sy(0) + 26);
   ctx.fillStyle = '#f44';
-  ctx.fillText(`Total ${result.value.stats.total}m`, sx(rest.x), sy(0) + 40);
+  ctx.fillText(`Total ${dist(result.value.stats.total).display}`, sx(rest.x), sy(0) + 40);
 }
 
 watch([speed, launchAngle, spinRate, sideAngle, surfaceKey], simulate);
+watch(unitSystem, draw);
 onMounted(() => {
   simulate();
   runFullBag();
@@ -162,7 +172,13 @@ watch(surfaceKey, runFullBag);
 
 <template>
   <div class="golf-demo">
-    <h2>Golf Shot Simulator</h2>
+    <div class="demo-header">
+      <h2>Golf Shot Simulator</h2>
+      <div class="unit-toggle">
+        <button :class="{ active: isImperial }" @click="unitSystem = 'imperial'">Imperial</button>
+        <button :class="{ active: !isImperial }" @click="unitSystem = 'metric'">Metric</button>
+      </div>
+    </div>
 
     <canvas ref="canvas" width="920" height="360" />
 
@@ -188,7 +204,7 @@ watch(surfaceKey, runFullBag);
 
       <div class="control-group">
         <label>
-          Ball Speed: <strong>{{ speed }} m/s</strong>
+          Ball Speed: <strong>{{ spd(speed).display }}</strong>
           <input type="range" v-model.number="speed" min="15" max="90" step="0.5" />
         </label>
         <label>
@@ -199,7 +215,7 @@ watch(surfaceKey, runFullBag);
 
       <div class="control-group">
         <label>
-          Spin Rate: <strong>{{ spinRate }} rad/s</strong>
+          Spin Rate: <strong>{{ spin(spinRate).display }}</strong>
           <input type="range" v-model.number="spinRate" min="0" max="1200" step="10" />
         </label>
         <label>
@@ -212,19 +228,19 @@ watch(surfaceKey, runFullBag);
     <!-- Stats -->
     <div v-if="result" class="stats">
       <div class="stat">
-        <span class="val">{{ result.stats.carry }}m</span>
+        <span class="val">{{ dist(result.stats.carry).display }}</span>
         <span class="lbl">Carry</span>
       </div>
       <div class="stat">
-        <span class="val roll">+{{ result.stats.rollDist }}m</span>
+        <span class="val roll">+{{ dist(result.stats.rollDist).display }}</span>
         <span class="lbl">Roll</span>
       </div>
       <div class="stat">
-        <span class="val total">{{ result.stats.total }}m</span>
+        <span class="val total">{{ dist(result.stats.total).display }}</span>
         <span class="lbl">Total</span>
       </div>
       <div class="stat">
-        <span class="val">{{ result.stats.apex }}m</span>
+        <span class="val">{{ dist(result.stats.apex).display }}</span>
         <span class="lbl">Apex</span>
       </div>
       <div class="stat">
@@ -232,7 +248,7 @@ watch(surfaceKey, runFullBag);
         <span class="lbl">Flight</span>
       </div>
       <div class="stat">
-        <span class="val">{{ result.stats.lateral }}m</span>
+        <span class="val">{{ dist(result.stats.lateral).display }}</span>
         <span class="lbl">Lateral</span>
       </div>
     </div>
@@ -257,13 +273,13 @@ watch(surfaceKey, runFullBag);
           <tr v-for="row in bagResults" :key="row.club"
               :class="{ highlight: row.club === clubKey }">
             <td class="club-name">{{ row.name }}</td>
-            <td>{{ CLUBS[row.club].speed }}</td>
+            <td>{{ spd(CLUBS[row.club].speed).display }}</td>
             <td>{{ CLUBS[row.club].launch }}°</td>
-            <td>{{ CLUBS[row.club].spin }}</td>
-            <td>{{ row.stats.carry }}m</td>
-            <td class="roll-col">+{{ row.stats.rollDist }}m</td>
-            <td class="total-col">{{ row.stats.total }}m</td>
-            <td>{{ row.stats.apex }}m</td>
+            <td>{{ spin(CLUBS[row.club].spin).display }}</td>
+            <td>{{ dist(row.stats.carry).display }}</td>
+            <td class="roll-col">+{{ dist(row.stats.rollDist).display }}</td>
+            <td class="total-col">{{ dist(row.stats.total).display }}</td>
+            <td>{{ dist(row.stats.apex).display }}</td>
           </tr>
         </tbody>
       </table>
@@ -272,10 +288,40 @@ watch(surfaceKey, runFullBag);
 </template>
 
 <style scoped>
+.demo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .golf-demo h2 {
   font-size: 1.1rem;
   color: #ccc;
-  margin-bottom: 12px;
+  margin: 0;
+}
+
+.unit-toggle {
+  display: flex;
+  gap: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #2a3a54;
+}
+
+.unit-toggle button {
+  background: #1a2a44;
+  color: #8a9ab5;
+  border: none;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.unit-toggle button.active {
+  background: #2a4a6a;
+  color: #e0e0e0;
 }
 
 canvas {

@@ -30,7 +30,7 @@ int test_aerodynamics_run(void) {
         phys_float spin_rate = 300.0f; /* rad/s */
 
         phys_vec3 magnus = phys_aero_magnus(vel, spin_axis, spin_rate,
-                                            0.02135f, 1.225f);
+                                            0.02135f, 0.25f, 1.225f);
         /* cross(z, x) yields +y, so magnus should have positive y (lift) */
         ASSERT_TRUE(magnus.y > 0, "spin creates lift (+y)");
     }
@@ -67,10 +67,10 @@ int test_aerodynamics_run(void) {
         }
         phys_float carry = pts[n-1].position.x;
 
-        /* Should carry 100-350m and peak 10-80m at these velocities */
-        ASSERT_TRUE(carry > 100.0f, "carry > 100m");
-        ASSERT_TRUE(carry < 350.0f, "carry < 350m");
-        ASSERT_TRUE(max_y > 10.0f, "max height > 10m");
+        /* With Cl=0.15 and Cd=0.25, should carry 50-300m */
+        ASSERT_TRUE(carry > 50.0f, "carry > 50m");
+        ASSERT_TRUE(carry < 300.0f, "carry < 300m");
+        ASSERT_TRUE(max_y > 5.0f, "max height > 5m");
         ASSERT_TRUE(max_y < 80.0f, "max height < 80m");
     }
 

@@ -7,12 +7,13 @@
 phys_vec3 phys_aero_drag(phys_vec3 velocity, phys_float drag_coeff,
                          phys_float area, phys_float air_density);
 
-/* Magnus force (spin-induced lateral deflection):
-   F = 0.5 * Cl * rho * A * (spin x velocity) / |spin| * |velocity|
-   simplified: proportional to cross(spin, velocity) */
+/* Magnus force for a spinning sphere.
+   lift_coeff scales the spin parameter: Cl = lift_coeff * S, where S = omega*r/v.
+   Higher lift_coeff = more lift from spin. Typical range: 0.2-0.6 depending on
+   surface geometry (smooth sphere ~0.5, dimpled ~0.2). */
 phys_vec3 phys_aero_magnus(phys_vec3 velocity, phys_vec3 spin_axis,
                            phys_float spin_rate, phys_float radius,
-                           phys_float air_density);
+                           phys_float lift_coeff, phys_float air_density);
 
 /* Combined aerodynamic force (drag + Magnus) using param struct */
 phys_vec3 phys_aero_total_force(phys_vec3 velocity, phys_vec3 spin_axis,

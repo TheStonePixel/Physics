@@ -14,27 +14,27 @@ import { init } from '@thestonepixel/physics';
 // --- Golf ball physical properties (USGA spec) ---
 
 export const BALL = Object.freeze({
-  mass: 0.04593,        // 45.93 g
-  radius: 0.02135,      // 42.67 mm diameter
+  mass: 0.04593,        // 45.93 g (USGA max)
+  radius: 0.02135,      // 42.67 mm diameter (USGA min)
   crossArea: 0.00143,   // pi * radius^2
-  dragCoeff: 0.25,      // dimpled sphere
-  liftCoeff: 0.15,      // backspin lift
+  dragCoeff: 0.40,      // dimpled golf ball (constant-Cd approximation)
+  liftCoeff: 0.17,      // dimpled sphere Cl scaling (Cl = 0.17*S)
   airDensity: 1.225,    // sea level, 15°C
   spinDecay: 0.04,      // ~4% per second
   restitution: 0.6,
   friction: 0.4,
 });
 
-// --- Club presets (tour averages) ---
+// --- Club presets (TrackMan PGA Tour averages) ---
 
 export const CLUBS = Object.freeze({
-  driver:  { name: 'Driver',  speed: 71.5, launch: 10.5, spin: 280 },
-  '3wood': { name: '3 Wood',  speed: 64.0, launch: 11.0, spin: 340 },
-  '5iron': { name: '5 Iron',  speed: 56.0, launch: 14.0, spin: 460 },
-  '7iron': { name: '7 Iron',  speed: 48.5, launch: 18.0, spin: 620 },
-  '9iron': { name: '9 Iron',  speed: 41.0, launch: 24.0, spin: 780 },
-  pw:      { name: 'PW',      speed: 37.0, launch: 28.0, spin: 880 },
-  sw:      { name: 'SW',      speed: 31.0, launch: 34.0, spin: 980 },
+  driver:  { name: 'Driver',  speed: 74.7, launch: 10.9, spin: 281 },  // 167 mph, 2686 RPM
+  '3wood': { name: '3 Wood',  speed: 70.6, launch:  9.3, spin: 383 },  // 158 mph, 3655 RPM
+  '5iron': { name: '5 Iron',  speed: 60.8, launch: 12.1, spin: 561 },  // 136 mph, 5361 RPM
+  '7iron': { name: '7 Iron',  speed: 53.6, launch: 16.3, spin: 743 },  // 120 mph, 7097 RPM
+  '9iron': { name: '9 Iron',  speed: 46.5, launch: 20.4, spin: 905 },  // 104 mph, 8647 RPM
+  pw:      { name: 'PW',      speed: 43.8, launch: 24.2, spin: 975 },  //  98 mph, 9316 RPM
+  sw:      { name: 'SW',      speed: 35.7, launch: 30.5, spin: 1047 }, //  80 mph, 10000 RPM
 });
 
 export const CLUB_ORDER = ['driver', '3wood', '5iron', '7iron', '9iron', 'pw', 'sw'];

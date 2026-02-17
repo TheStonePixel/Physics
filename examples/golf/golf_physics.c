@@ -3,14 +3,14 @@
 
 /* --- Club presets based on typical tour averages --- */
 static const golf_club_preset s_presets[GOLF_CLUB_COUNT] = {
-    /* name        speed(m/s) launch(deg) spin(rad/s) */
-    { "Driver",     71.5f,     10.5f,      280.0f },
-    { "3 Wood",     64.0f,     11.0f,      340.0f },
-    { "5 Iron",     56.0f,     14.0f,      460.0f },
-    { "7 Iron",     48.5f,     18.0f,      620.0f },
-    { "9 Iron",     41.0f,     24.0f,      780.0f },
-    { "PW",         37.0f,     28.0f,      880.0f },
-    { "SW",         31.0f,     34.0f,      980.0f },
+    /* name        speed(m/s) launch(deg) spin(rad/s)  — TrackMan tour averages */
+    { "Driver",     74.7f,     10.9f,      281.0f },  /* 167 mph, 2686 RPM */
+    { "3 Wood",     70.6f,      9.3f,      383.0f },  /* 158 mph, 3655 RPM */
+    { "5 Iron",     60.8f,     12.1f,      561.0f },  /* 136 mph, 5361 RPM */
+    { "7 Iron",     53.6f,     16.3f,      743.0f },  /* 120 mph, 7097 RPM */
+    { "9 Iron",     46.5f,     20.4f,      905.0f },  /* 104 mph, 8647 RPM */
+    { "PW",         43.8f,     24.2f,      975.0f },  /*  98 mph, 9316 RPM */
+    { "SW",         35.7f,     30.5f,     1047.0f },  /*  80 mph, 10000 RPM */
 };
 
 golf_club_preset golf_get_club_preset(golf_club_type club) {
@@ -22,8 +22,8 @@ golf_club_preset golf_get_club_preset(golf_club_type club) {
 
 phys_aero_params golf_ball_aero_params(void) {
     phys_aero_params p;
-    p.drag_coefficient = 0.25f;       /* dimpled golf ball */
-    p.lift_coefficient = 0.15f;       /* typical for backspin */
+    p.drag_coefficient = 0.40f;       /* dimpled golf ball (constant-Cd approximation) */
+    p.lift_coefficient = 0.17f;       /* dimpled sphere Cl scaling (Cl = 0.17*S) */
     p.cross_section_area = GOLF_BALL_AREA;
     p.radius = GOLF_BALL_RADIUS;
     p.air_density = 1.225f;           /* sea level, 15C */

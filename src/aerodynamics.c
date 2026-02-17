@@ -15,17 +15,18 @@ phys_vec3 phys_aero_drag(phys_vec3 velocity, phys_float drag_coeff,
 
 phys_vec3 phys_aero_magnus(phys_vec3 velocity, phys_vec3 spin_axis,
                            phys_float spin_rate, phys_float radius,
-                           phys_float air_density) {
+                           phys_float lift_coeff, phys_float air_density) {
     phys_float speed = phys_vec3_length(velocity);
     if (speed < 1e-8f || spin_rate < 1e-8f) return phys_vec3_zero();
 
-    /* Empirical Magnus/lift force for spinning spheres:
+    /* Magnus/lift force for spinning spheres:
        F = 0.5 * Cl * rho * A * v^2 * lift_direction
-       where Cl is derived from spin parameter S = omega*r / v.
-       Typical relation: Cl ~ 0.54 * S (capped at ~0.4).
+       where Cl = lift_coeff * S, S = omega*r / v (spin parameter).
+       lift_coeff is caller-provided to match surface geometry:
+         ~0.5 for smooth spheres, ~0.2 for dimpled.
        lift_direction = normalize(omega x v) */
     phys_float S = spin_rate * radius / speed;
-    phys_float Cl = 0.54f * S;
+    phys_float Cl = lift_coeff * S;
     if (Cl > 0.4f) Cl = 0.4f;
 
     phys_vec3 omega = phys_vec3_scale(spin_axis, spin_rate);
@@ -46,7 +47,9 @@ phys_vec3 phys_aero_total_force(phys_vec3 velocity, phys_vec3 spin_axis,
                                     params.cross_section_area,
                                     params.air_density);
     phys_vec3 magnus = phys_aero_magnus(velocity, spin_axis, spin_rate,
-                                        params.radius, params.air_density);
+                                        params.radius,
+                                        params.lift_coefficient,
+                                        params.air_density);
     return phys_vec3_add(drag, magnus);
 }
 
